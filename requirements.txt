@@ -1,0 +1,10 @@
+ONE-api
+ibllib
+ibl-style
+numpy
+scipy
+pandas
+matplotlib
+seaborn
+scikit-learn
+tqdm
