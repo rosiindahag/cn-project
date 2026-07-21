@@ -1,5 +1,35 @@
 # Q3 Decoder: The Single-Session Ranking Problem & the `MIN_SESSIONS` Fix
 
+## What Q3 does
+
+Q3 decodes the animal's **upcoming choice (left/right)** from **pre-movement
+population activity** — the firing in the `-0.1 < t < 0` s window before first
+movement, so the signal cannot be contaminated by the movement itself. Decoding
+is run **per `(region, session)`**: for each region within a session we build a
+`trials × units` feature matrix, fit the classifier, and cross-validate. We then
+**average the CV accuracy across sessions** for each region. `region_df` is sorted
+by `mean_cv_acc` (descending), so the top rows are the regions from which upcoming
+choice is most decodable.
+
+## Background: why cross-validation (CV) at all
+
+The core problem CV fixes: **if you train a classifier and test it on the same
+trials, it can simply memorize those trials and report a great score that means
+nothing.** A model with enough parameters can fit the training data perfectly,
+so accuracy measured on the training trials tells you about memorization, not
+about a real, generalizable choice signal.
+
+The only honest test is on trials the model has **never seen**. Cross-validation
+does this systematically: the data is split into *k* folds (here `N_SPLITS = 5`),
+the model trains on *k−1* folds and is scored on the held-out fold, and this
+rotates so every trial is used for testing exactly once while never being in its
+own training set. `mean_cv_acc` is the average of those held-out scores.
+
+This is why every number in this write-up is a *cross-validated* accuracy, and it
+is also why the single-session case below is dangerous: with only one session's
+worth of trials, even a held-out CV estimate is a single, high-variance draw that
+is easy to inflate.
+
 ## The problem
 
 `region_df` is sorted by `mean_cv_acc` (descending), and the top rows are dominated by
