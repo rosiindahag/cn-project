@@ -1,0 +1,9 @@
+data/
+ibl_cache/
+.venv/
+.ipynb_checkpoints/
+IBL_BWM_Neuromatch_tutorial.ipynb
+acronym.csv
+beryl_reg_avg.csv
+filtered_onezero.csv
+oret-oret.ipynb
